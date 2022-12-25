@@ -1,5 +1,6 @@
 // Uncomment this block to pass the first stage
 use std::net::TcpListener;
+use std::io::{prelude::*};
 
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -13,6 +14,9 @@ fn main() {
          match stream {
              Ok(_stream) => {
                  println!("accepted new connection");
+                 let response = "+PONG\r\n";
+                 let mut _streamer = _stream;
+                 _streamer.write_all(response.as_bytes()).unwrap();
              }
              Err(e) => {
                  println!("error: {}", e);
