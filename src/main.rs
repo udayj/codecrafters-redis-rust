@@ -10,6 +10,7 @@ fn main() {
     //
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
     //
+    loop {
      for stream in listener.incoming() {
          match stream {
              Ok(_stream) => {
@@ -23,4 +24,5 @@ fn main() {
              }
          }
      }
+    }
 }
