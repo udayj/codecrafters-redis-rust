@@ -1,6 +1,7 @@
 // Uncomment this block to pass the first stage
-use std::net::TcpListener;
+use std::net::{TcpListener, TcpStream};
 use std::io::{prelude::*};
+use std::thread;
 
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -11,27 +12,35 @@ fn main() {
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
     //
      for stream in listener.incoming() {
-         match stream {
-             Ok(_stream) => {
-
-                 let mut n = 1;
-                 let mut buffer = [0;1024];
-                 let mut _streamer = _stream;
-                 while n!=0 {
-
-                    
-                    n = _streamer.read(&mut buffer).unwrap();
-                    let response = "+PONG\r\n";
-                    
-                    _streamer.write_all(response.as_bytes()).unwrap();
-
-                 }
-                 
-                 
-             }
-             Err(e) => {
-                 println!("error: {}", e);
-             }
-         }
+        //let stream = stream.unwrap();
+        thread::spawn(move || {handle_connection(&stream);});
+        
      }
+}
+
+fn handle_connection(stream: &Result<TcpStream, std::io::Error>) {
+
+    match stream {
+        Ok(_stream) => {
+
+            let mut n = 1;
+            let mut buffer = [0;1024];
+            let mut _streamer = _stream;
+            while n!=0 {
+
+               
+               n = _streamer.read(&mut buffer).unwrap();
+               let response = "+PONG\r\n";
+               
+               _streamer.write_all(response.as_bytes()).unwrap();
+
+            }
+            
+            
+        }
+        Err(e) => {
+            println!("error: {}", e);
+        }
     }
+}
+
