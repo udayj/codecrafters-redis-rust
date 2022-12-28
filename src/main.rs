@@ -10,14 +10,24 @@ fn main() {
     //
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
     //
-    loop {
      for stream in listener.incoming() {
          match stream {
              Ok(_stream) => {
-                 println!("accepted new connection");
-                 let response = "+PONG\r\n";
+
+                 let mut n = 1;
+                 let mut buffer = [0;1024];
                  let mut _streamer = _stream;
-                 _streamer.write_all(response.as_bytes()).unwrap();
+                 while n!=0 {
+
+                    
+                    n = _streamer.read(&mut buffer).unwrap();
+                    let response = "+PONG\r\n";
+                    
+                    _streamer.write_all(response.as_bytes()).unwrap();
+
+                 }
+                 
+                 
              }
              Err(e) => {
                  println!("error: {}", e);
@@ -25,4 +35,3 @@ fn main() {
          }
      }
     }
-}
