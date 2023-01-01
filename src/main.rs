@@ -46,6 +46,13 @@ fn handle_connection(stream: Result<TcpStream, std::io::Error>) {
                         message.push_str("\r\n");
                         _streamer.write_all(message.as_bytes()).unwrap();
                     }
+                    else {
+
+                        let response = "+PONG\r\n";
+               
+                        _streamer.write_all(response.as_bytes()).unwrap();
+                        
+                    }
                }
 
             }
