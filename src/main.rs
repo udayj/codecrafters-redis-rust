@@ -13,12 +13,12 @@ fn main() {
     //
      for stream in listener.incoming() {
         //let stream = stream.unwrap();
-        thread::spawn(move || {handle_connection(&stream);});
+        thread::spawn(|| {handle_connection(stream);});
         
      }
 }
 
-fn handle_connection(stream: &Result<TcpStream, std::io::Error>) {
+fn handle_connection(stream: Result<TcpStream, std::io::Error>) {
 
     match stream {
         Ok(_stream) => {
@@ -30,9 +30,23 @@ fn handle_connection(stream: &Result<TcpStream, std::io::Error>) {
 
                
                n = _streamer.read(&mut buffer).unwrap();
-               let response = "+PONG\r\n";
+               if *buffer.get(0).unwrap() != b'*' {
+
+                let response = "+PONG\r\n";
                
-               _streamer.write_all(response.as_bytes()).unwrap();
+                _streamer.write_all(response.as_bytes()).unwrap();
+               }
+               else {
+                    let s = String::from_utf8(buffer.to_vec()).unwrap();
+                    if &s[4..14] == "$4\r\nECHO\r\n" {
+
+                        let len : usize =s[15..16].parse().unwrap();
+                        let mut message = String::from("+");
+                        message.push_str(&String::from_utf8(buffer[18..(18+len)].to_vec()).unwrap());
+                        message.push_str("\r\n");
+                        _streamer.write_all(message.as_bytes()).unwrap();
+                    }
+               }
 
             }
             
