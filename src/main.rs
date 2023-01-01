@@ -38,7 +38,7 @@ fn handle_connection(stream: Result<TcpStream, std::io::Error>) {
                }
                else {
                     let s = String::from_utf8(buffer.to_vec()).unwrap();
-                    if &s[4..14] == "$4\r\nECHO\r\n" {
+                    if &s[4..14] == "$4\r\nECHO\r\n".to_lowercase() {
 
                         let len : usize =s[15..16].parse().unwrap();
                         let mut message = String::from("+");
@@ -51,7 +51,7 @@ fn handle_connection(stream: Result<TcpStream, std::io::Error>) {
                         let response = "+PONG\r\n";
                
                         _streamer.write_all(response.as_bytes()).unwrap();
-                        
+
                     }
                }
 
